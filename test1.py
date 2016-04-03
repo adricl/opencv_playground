@@ -58,25 +58,18 @@ def main():
         LowV = cv2.getTrackbarPos('LowV','image')
         HighV = cv2.getTrackbarPos('HighV','image')
 
+        imgThresh = cv2.inRange(imgHSV, np.array([153, 29, 106]), np.array([184, 70, 255]))
 
-#        imgThreshLow = cv2.inRange(imgHSV, np.array([0, 135, 135]), np.array([18, 255, 255]))
-#        imgThreshHigh = cv2.inRange(imgHSV, np.array([165, 135, 135]), np.array([179, 255, 255]))
-
-
-#        imgThreshLow = cv2.inRange(imgHSV, np.array([0, 50, 170]), np.array([10, 180, 256]))
- #       imgThreshHigh = cv2.inRange(imgHSV, np.array([170, 50, 170]), np.array([256, 180, 256]))
-
-
-#		LowH = 3 HighH = 17
-        imgThresh = cv2.inRange(imgHSV, np.array([LowH, LowS, LowV]), np.array([HighH, HighS, HighV]))
+        #imgThresh = cv2.inRange(imgHSV, np.array([LowH, LowS, LowV]), np.array([HighH, HighS, HighV]))
 #        imgThresh = cv2.add(imgThreshLow, imgThreshHigh)
 
         imgGau = cv2.GaussianBlur(imgThresh, (3, 3), 2)
-
+#	imgThresh = cv2.Th
         imgDial = cv2.dilate(imgGau, np.ones((5,5),np.uint8))
         imgErode = cv2.erode(imgDial, np.ones((5,5),np.uint8))
 
         intRows, intColumns = imgErode.shape
+
 
 #        circles = cv2.HoughCircles(imgErode, cv2.HOUGH_GRADIENT, 5, intRows / 5)      # fill variable circles with all circles in the processed image
 
@@ -92,12 +85,12 @@ def main():
         # end if
 
         cv2.namedWindow("imgOriginal", cv2.WINDOW_AUTOSIZE)            # create windows, use WINDOW_AUTOSIZE for a fixed window size
-        cv2.namedWindow("imgThresh", cv2.WINDOW_AUTOSIZE)           # or use WINDOW_NORMAL to allow window resizing
-        cv2.namedWindow("imgGaus", cv2.WINDOW_AUTOSIZE)
-        cv2.namedWindow("imgDial", cv2.WINDOW_AUTOSIZE)
-        cv2.namedWindow("imgErode", cv2.WINDOW_AUTOSIZE)
-        cv2.namedWindow("imgHSV", cv2.WINDOW_AUTOSIZE)
-        cv2.namedWindow("imgErode", cv2.WINDOW_AUTOSIZE)
+#        cv2.namedWindow("imgThresh", cv2.WINDOW_AUTOSIZE)           # or use WINDOW_NORMAL to allow window resizing
+#        cv2.namedWindow("imgGaus", cv2.WINDOW_AUTOSIZE)
+#        cv2.namedWindow("imgDial", cv2.WINDOW_AUTOSIZE)
+#        cv2.namedWindow("imgErode", cv2.WINDOW_AUTOSIZE)
+#        cv2.namedWindow("imgHSV", cv2.WINDOW_AUTOSIZE)
+#        cv2.namedWindow("imgErode", cv2.WINDOW_AUTOSIZE)
         cv2.namedWindow("imgHSV", cv2.WINDOW_AUTOSIZE)
 
 #        cv2.namedWindow("imgThreshLow", cv2.WINDOW_AUTOSIZE)
@@ -107,10 +100,10 @@ def main():
 #        cv2.imshow("imgThreshHigh", imgThreshHigh)
 
         cv2.imshow("imgOriginal", imgOriginal)                 # show windows
-        cv2.imshow("imgThresh", imgThresh)
-        cv2.imshow("imgHSV", imgHSV)
-        cv2.imshow("imgGaus", imgGau)
-        cv2.imshow("imgDial", imgDial)
+        #cv2.imshow("imgThresh", imgThresh)
+        #cv2.imshow("imgHSV", imgHSV)
+        #cv2.imshow("imgGaus", imgGau)
+        #cv2.imshow("imgDial", imgDial)
         cv2.imshow("imgErode", imgErode)
 
     # end while
