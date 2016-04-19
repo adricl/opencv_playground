@@ -13,7 +13,7 @@ def nothing(x):
 ###################################################################################################
 def main():
 
-    capWebcam = cv2.VideoCapture(0)                     # declare a VideoCapture object and associate to webcam, 0 => use 1st webcam
+    capWebcam = cv2.VideoCapture(1)                     # declare a VideoCapture object and associate to webcam, 0 => use 1st webcam
 
                                                         # show original resolution
     print "default resolution = " + str(capWebcam.get(cv2.CAP_PROP_FRAME_WIDTH)) + "x" + str(capWebcam.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -56,8 +56,8 @@ def main():
             break                                                           # exit while loop (which exits program)
         # end if
 
-        imgHSV = imgOriginal
-        #imgHSV = cv2.cvtColor(imgOriginal, cv2.COLOR_BGR2HSV)
+       # imgHSV = imgOriginal
+        imgHSV = cv2.cvtColor(imgOriginal, cv2.COLOR_BGR2HSV)
 
         LowH = cv2.getTrackbarPos('LowH','image')
         HighH = cv2.getTrackbarPos('HighH','image')
@@ -77,14 +77,16 @@ def main():
 
 #        imgThresh = cv2.inRange(imgHSV, np.array([168, 119, 63]), np.array([180, 255, 197])) #Red Ball Daylight
 #        imgThresh = cv2.inRange(imgHSV, np.array([154, 255, 37]), np.array([190, 255, 255])) #Red ball night
+
+#        imgThresh = cv2.inRange(imgHSV, np.array([78, 128, 0]), np.array([141, 255, 255]))
         imgThresh = cv2.inRange(imgHSV, np.array([LowH, LowS, LowV]), np.array([HighH, HighS, HighV]))
 #        imgThresh = cv2.add(imgThreshLow, imgThreshHigh)
 
 
 #        imgErode = cv.cvSmooth(imgThresh, CV_GAUSSIAN, 9, 9)
-        imgGau = cv2.GaussianBlur(imgThresh, (3, 3), 2)
+#        imgGau = cv2.GaussianBlur(imgThresh, (3, 3), 2)
 #	imgThresh = cv2.Th
-        imgDial = cv2.dilate(imgGau, np.ones((5,5),np.uint8))
+        imgDial = cv2.dilate(imgThresh, np.ones((5,5),np.uint8))
         imgErode = cv2.erode(imgDial, np.ones((5,5),np.uint8))
         
         str_el = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
@@ -93,7 +95,6 @@ def main():
 
         cont, contours, hierarchy = cv2.findContours(morph, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         
-        print contours
         for i in range(len(contours)):
             (x,y), r = cv2.minEnclosingCircle(contours[i])
             if (r >= minD):
