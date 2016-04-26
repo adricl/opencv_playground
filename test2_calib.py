@@ -19,20 +19,25 @@ def main():
 
 
     cv2.namedWindow('image')
-    cv2.createTrackbar('LowH', 'image', 0, 255, nothing)
-    cv2.createTrackbar('HighH', 'image', 0, 255, nothing)
-    cv2.createTrackbar('LowS', 'image', 0, 255, nothing)
-    cv2.createTrackbar('HighS', 'image', 0, 255, nothing)
-    cv2.createTrackbar('LowV', 'image', 0, 255, nothing)
-    cv2.createTrackbar('HighV', 'image', 0, 255, nothing)
+    cv2.createTrackbar('LowH', 'image', 1, 255, nothing)
+    cv2.createTrackbar('HighH', 'image', 1, 255, nothing)
+    cv2.createTrackbar('LowS', 'image', 1, 255, nothing)
+    cv2.createTrackbar('HighS', 'image', 1, 255, nothing)
+    cv2.createTrackbar('LowV', 'image', 1, 255, nothing)
+    cv2.createTrackbar('HighV', 'image', 1, 255, nothing)
     cv2.createTrackbar('dp', 'image', 1, 255, nothing)
     cv2.createTrackbar('minDist', 'image', 1, 255, nothing)
     cv2.createTrackbar('param1', 'image', 1, 255, nothing)
     cv2.createTrackbar('param2', 'image', 1, 255, nothing)
+    cv2.namedWindow("imgOriginal", cv2.WINDOW_AUTOSIZE)  # create windows, use WINDOW_AUTOSIZE for a fixed window size
+    cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
+    imgOriginal = cv2.imread('2016-04-19-204133.jpg',
+                                 1)    
+    imgOriginal = cv2.resize(imgOriginal, (320,240))
 
-    while(1):
-        imgOriginal = cv2.imread('2016-04-19-204133.jpg',
-                                 1)
+    while(cv2.waitKey(1) != 27):
+
         imgHSV = cv2.cvtColor(imgOriginal, cv2.COLOR_BGR2HSV)
 
         LowH = cv2.getTrackbarPos('LowH', 'image')
@@ -64,31 +69,30 @@ def main():
         str_el = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         morph = cv2.morphologyEx(imgThresh, cv2.MORPH_OPEN, str_el)
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, str_el)
+        
+        imgCircle = circleDetected(morph, imgOriginal, minD)
 
-        cont, contours, hierarchy = cv2.findContours(morph, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-
-        for i in range(len(contours)):
-            (x, y), r = cv2.minEnclosingCircle(contours[i])
-            if (r >= minD):
-                cv2.circle(imgOriginal, (int(x), int(y)), int(r), (0, 0, 255), 3)
-
-            intRows, intColumns = imgErode.shape
-
-
-        cv2.namedWindow("imgOriginal", cv2.WINDOW_AUTOSIZE)  # create windows, use WINDOW_AUTOSIZE for a fixed window size
-        cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
-
-        cv2.imshow("imgOriginal", imgOriginal)  # show windows
+        cv2.imshow("imgOriginal", imgCircle)  # show windows
         cv2.imshow("imgErode", imgErode)
         cv2.imshow("imgMorph", morph)
 
     # end while
 
     #cv2.waitKey(0)
-    cv2.destroyAllWindows()                     # remove windows from memory
+    #cv2.destroyAllWindows()                     # remove windows from memory
 
     return
+###################################################################################################
 
+def circleDetected(image, imgOriginal, minD):
+    cont, contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    cicleImg = cv2.copyMakeBorder(imgOriginal,0,0,0,0,cv2.BORDER_REPLICATE)
+    for i in range(len(contours)):
+        (x, y), r = cv2.minEnclosingCircle(contours[i])
+        if (r >= minD):
+            cv2.circle(cicleImg, (int(x), int(y)), int(r), (0, 0, 255), 3)
+            #intRows, intColumns = imgErode.shape
+    return cicleImg
 
 ###################################################################################################
 if __name__ == "__main__":
