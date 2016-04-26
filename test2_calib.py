@@ -15,9 +15,6 @@ def nothing(x):
 ###################################################################################################
 def main():
 
-
-
-
     cv2.namedWindow('image')
     cv2.createTrackbar('LowH', 'image', 1, 255, nothing)
     cv2.createTrackbar('HighH', 'image', 1, 255, nothing)
@@ -32,8 +29,8 @@ def main():
     cv2.namedWindow("imgOriginal", cv2.WINDOW_AUTOSIZE)  # create windows, use WINDOW_AUTOSIZE for a fixed window size
     cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
     cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
-    imgOriginal = cv2.imread('2016-04-19-204133.jpg',
-                                 1)    
+    imgOriginal = cv2.imread('Pics/2016-04-26-182802.jpg',
+                                 1)   
     imgOriginal = cv2.resize(imgOriginal, (320,240))
 
     while(cv2.waitKey(1) != 27):
@@ -69,7 +66,8 @@ def main():
         str_el = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         morph = cv2.morphologyEx(imgThresh, cv2.MORPH_OPEN, str_el)
         morph = cv2.morphologyEx(morph, cv2.MORPH_CLOSE, str_el)
-        
+		        
+
         imgCircle = circleDetected(morph, imgOriginal, minD)
 
         cv2.imshow("imgOriginal", imgCircle)  # show windows
@@ -85,14 +83,19 @@ def main():
 ###################################################################################################
 
 def circleDetected(image, imgOriginal, minD):
-    cont, contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    cicleImg = cv2.copyMakeBorder(imgOriginal,0,0,0,0,cv2.BORDER_REPLICATE)
-    for i in range(len(contours)):
-        (x, y), r = cv2.minEnclosingCircle(contours[i])
-        if (r >= minD):
-            cv2.circle(cicleImg, (int(x), int(y)), int(r), (0, 0, 255), 3)
-            #intRows, intColumns = imgErode.shape
-    return cicleImg
+	height, width, temp = imgOriginal.shape
+	xTop = .25 * width
+	yTop = .5 * height
+	xBottom = .75 * width
+	yBottom = height
+	cont, contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+	cicleImg = cv2.copyMakeBorder(imgOriginal,0,0,0,0,cv2.BORDER_REPLICATE)
+	for i in range(len(contours)):
+		(x, y), r = cv2.minEnclosingCircle(contours[i])
+		if (xTop <= x and x <= xBottom and yTop <= y and y <= yBottom): 
+			cv2.circle(cicleImg, (int(x), int(y)), int(r), (0, 0, 255), 3)
+		#intRows, intColumns = imgErode.shape
+	return cicleImg
 
 ###################################################################################################
 if __name__ == "__main__":
