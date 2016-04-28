@@ -1,7 +1,6 @@
-# OpenCV_test_3.py
-
-# this program tracks a red ball
-# (no motor control is performed to move the camera, we will get to that later in the tutorial)
+#This code takes images and calibrates the camera based of the images
+#we expect the object to be detected in the bottom middle of the cameras view. This will calibrate on the largest object
+#in this view
 
 import cv2
 import numpy as np
@@ -14,7 +13,7 @@ def nothing(x):
 
 
 ###################################################################################################
-def main():
+def calibration(file):
 
     cv2.namedWindow('image')
     cv2.createTrackbar('LowH', 'image', 1, 255, nothing)
@@ -26,8 +25,11 @@ def main():
     cv2.namedWindow("imgOriginal", cv2.WINDOW_AUTOSIZE)  # create windows, use WINDOW_AUTOSIZE for a fixed window size
     cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
 
+    if not file:
+        imgOriginal = cv2.imread('Pics/2016-04-27-164011.jpg', 1)
+    else:
+        imgOriginal = cv2.imread(file,1)
 
-    imgOriginal = cv2.imread('Pics/2016-04-27-164011.jpg', 1)
     imgOriginal = cv2.resize(imgOriginal, (320,240))
 
     result = list()
@@ -77,13 +79,12 @@ def main():
             cv2.imshow("imgMorph", morph)
 
     # end while
-    sortResults(result)
-
+    (lowHSVResult, highHSVResult) = sortResults(result)
 
    
     #cv2.destroyAllWindows()                     # remove windows from memory
-
-    return
+    #print (lowHSVResult, highHSVResult)
+    return (lowHSVResult, highHSVResult)
 
 ###################################################################################################
 ##We optimise for low element count large radius and low count 
@@ -92,12 +93,18 @@ def sortResults(results):
     results.sort(key=lambda row:row[2])
     results.sort(key=lambda row:row[3], reverse=True)
     count = 0
-    for obj in results[:10]:
+    f = open('hsvVals.txt', 'w')
+    f.write('CircleCount, maxRadius, elemCount, lowHSV, highHSV\n')
+    # We take the top 2 results, we really tak the top result for calibration
+    for obj in results[:2]:
+        f.write(str(obj[1]) + ', ' + str(obj[2]) + ', ' + str(obj[3]) + ', ' + str(obj[4]) + ', ' + str(obj[5]) + '\n')
         cv2.imwrite(str(count) + ".png", obj[0])
-        count +=1
 
+        count +=1
+    return ((results[0])[4], (results[0])[5])
 
 ###################################################################################################
+#Give us a range of vaules with which to determine the best HSV value set
 ########horrible function that must be rewritten 
 def scanImage():
     rangeHSV = list()
@@ -157,4 +164,4 @@ def circleDetectedBound(image, imgOriginal):
 
 ###################################################################################################
 if __name__ == "__main__":
-    main()
+    calibration()
