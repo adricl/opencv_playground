@@ -13,7 +13,7 @@ def nothing(x):
 
 
 ###################################################################################################
-def calibration(file):
+def calibration(*file):
 
     cv2.namedWindow('image')
     cv2.createTrackbar('LowH', 'image', 1, 255, nothing)
@@ -26,9 +26,9 @@ def calibration(file):
     cv2.namedWindow("imgMorph", cv2.WINDOW_AUTOSIZE)
 
     if not file:
-        imgOriginal = cv2.imread('Pics/2016-04-27-164011.jpg', 1)
+        imgOriginal = cv2.imread('Pics/aaa.jpg', 1)
     else:
-        imgOriginal = cv2.imread(file,1)
+        imgOriginal = cv2.imread(file[0],1)
 
     imgOriginal = cv2.resize(imgOriginal, (320,240))
 
