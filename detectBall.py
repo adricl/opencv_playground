@@ -2,8 +2,14 @@ import cv2
 import numpy as np
 import sys
 import os
+import io
 import datetime
 import Calibration
+
+IS_PI = False
+
+if (IS_PI):
+    import picamera
 
 CAM_LOCATION = 0
 
@@ -47,23 +53,37 @@ def location(filteredImg):
 
     return (xMax, yMax, maxRadius)
 
+###################################################################################################
+
 def openCamera():
-    cam = capWebcam = cv2.VideoCapture(CAM_LOCATION)
+
+    if (IS_PI):
+        stream = io.BytesIO()
+        with picamera.PiCamera() as camera:
+            camera.framerate = 10
+            camera.start_preview()
+            camera.capture(stream, format='jpeg')
+
+            data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+            cam = image = cv2.imdecode(data, 1)
+    else:
+        cam = capWebcam = cv2.VideoCapture(CAM_LOCATION)
+
     if capWebcam.isOpened() == False:                           # check if VideoCapture object was associated to webcam successfully
         print "error: capWebcam not accessed successfully\n\n"          # if not, print error message to std out
         sys.exit(-1)                                       # pause until user presses a key so user can see error message
 
     return cam
-
+###################################################################################################
 def takePicture():
     filename = 'Pics/' + str(datetime.datetime.now()) + '.png'
 
-    cam = cv2.VideoCapture(CAM_LOCATION)
+    cam = openCamera()
     s, im = cam.read()
     cv2.imwrite(filename, im)
     cam.release()
-
     return filename
+###################################################################################################
 
 if __name__ == "__main__":
     #main(sys.argv)

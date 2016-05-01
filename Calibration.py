@@ -5,8 +5,12 @@
 import cv2
 import numpy as np
 import os
+import sys
 
 myDebug = False
+
+
+
 
 def nothing(x):
     pass
@@ -62,8 +66,6 @@ def calibration(*file):
         #        imgThresh = cv2.inRange(imgHSV, np.array([154, 255, 37]), np.array([190, 255, 255])) #Red ball night
         #        imgThresh = cv2.inRange(imgHSV, np.array([78, 128, 0]), np.array([141, 255, 255]))
        
-
-        
         morph = filterImage(imgOriginal, lowHSV, highHSV)
         
         imgCircle, count, maxRadius = circleDetectedBound(morph, imgOriginal)
@@ -147,7 +149,6 @@ def circleDetectedBound(image, imgOriginal):
 	#contours.sort()
         circleImg = cv2.copyMakeBorder(imgOriginal,0,0,0,0,cv2.BORDER_REPLICATE) #copy image to display Circles
 
-        
         circleCount = 0
         maxRadius = 0
         cv2.rectangle(circleImg, (int(xTop),int(yTop)), (int(xBottom), int(yBottom)), (0,255,0), 3)
@@ -162,6 +163,6 @@ def circleDetectedBound(image, imgOriginal):
 		#intRows, intColumns = imgErode.shape
 	return circleImg, circleCount, maxRadius
 
-###################################################################################################
+
 if __name__ == "__main__":
     calibration()
